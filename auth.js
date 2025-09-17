@@ -42,7 +42,7 @@ function checkAuth() {
 // Redirect to login page
 function redirectToLogin() {
     sessionStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = '/login.html';
 }
 
 // Logout function
@@ -59,7 +59,7 @@ function logout() {
     sessionStorage.clear();
     
     // Redirect to login
-    window.location.href = 'login.html';
+    window.location.href = '/login.html';
 }
 
 // Auto-check authentication on page load
@@ -103,4 +103,5 @@ document.addEventListener('DOMContentLoaded', function() {
 if (window.location !== window.parent.location) {
     // Page is in an iframe
     redirectToLogin();
+
 }
