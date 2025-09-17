@@ -1,0 +1,77 @@
+{
+  "recentTests": ["aiats1", "ft2", "aiats3"],
+  "tests": [
+    {
+      "id": "aiats1",
+      "name": "AIATS 1",
+      "date": "2025-09-01",
+      "phase": "Phase 1",
+      "batch": "RM01",
+      "category": "aiats",
+      "link": "https://example.com/test/aiats1",
+      "topics": ["Physics", "Chemistry", "Mathematics"],
+      "duration": "180 minutes",
+      "questions": 90
+    },
+    {
+      "id": "aiats2",
+      "name": "AIATS 2",
+      "date": "2025-09-15",
+      "phase": "Phase 2",
+      "batch": "RM02",
+      "category": "aiats",
+      "link": "https://example.com/test/aiats2",
+      "topics": ["Physics", "Chemistry", "Biology"],
+      "duration": "180 minutes",
+      "questions": 90
+    },
+    {
+      "id": "aiats3",
+      "name": "AIATS 3",
+      "date": "2025-10-01",
+      "phase": "Phase 1",
+      "batch": "RM03",
+      "category": "aiats",
+      "link": "https://example.com/test/aiats3",
+      "topics": ["Physics", "Chemistry", "Mathematics"],
+      "duration": "180 minutes",
+      "questions": 90
+    },
+    {
+      "id": "ft1",
+      "name": "FT 1",
+      "date": "2025-08-06",
+      "phase": "Phase 3",
+      "batch": "RM06",
+      "category": "ft",
+      "link": "test/ft/ft1/index.html",
+      "topics": ["PCBZ"],
+      "duration": "180 minutes",
+      "questions": 180
+    },
+    {
+      "id": "ft2",
+      "name": "FT 2",
+      "date": "2025-09-20",
+      "phase": "Phase 2",
+      "batch": "RM02",
+      "category": "ft",
+      "link": "https://example.com/test/ft2",
+      "topics": ["Full Syllabus"],
+      "duration": "180 minutes",
+      "questions": 90
+    },
+    {
+      "id": "ft3",
+      "name": "FT 3",
+      "date": "2025-10-05",
+      "phase": "Phase 1",
+      "batch": "RM03",
+      "category": "ft",
+      "link": "https://example.com/test/ft3",
+      "topics": ["Full Syllabus"],
+      "duration": "180 minutes",
+      "questions": 90
+    }
+  ]
+}

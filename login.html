@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .login-header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .login-header h2 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .login-header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .login-form {
+            padding: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .input-group .left-icon {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            color: var(--gray);
+        }
+        
+        .input-group .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: var(--gray);
+            cursor: pointer;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            min-height: 20px;
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--gray);
+            border-top: 1px solid #eee;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        
+        .loading {
+            text-align: center;
+            color: var(--gray);
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-header">
+        <h2>Secure Login</h2>
+        <p>Enter your credentials to continue</p>
+    </div>
+    
+    <div class="login-form">
+        <div class="input-group">
+            <label for="userid">User ID</label>
+            <i class="fas fa-user left-icon"></i>
+            <input type="text" id="userid" placeholder="Enter your ID" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Password</label>
+            <i class="fas fa-lock left-icon"></i>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+        </div>
+        
+        <button class="btn-login" onclick="login()">Login</button>
+        
+        <div class="error-message" id="error"></div>
+        <div class="loading" id="loading" style="display: none;">Loading credentials...</div>
+    </div>
+    
+    <div class="login-footer">
+        <p>&copy; 2023 Secure Login System. All rights reserved.</p>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let encryptedCredentials = [];
+    const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+
+    // Check if already logged in
+    if (sessionStorage.getItem('loggedIn') === 'true') {
+        window.location.href = 'index.html';
+    }
+
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle eye icon
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    // Load encrypted credentials from JSON file
+    async function loadCredentials() {
+        try {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').textContent = '';
+            
+            const response = await fetch('credentials.json');
+            if (!response.ok) {
+                throw new Error('Failed to load credentials');
+            }
+            
+            encryptedCredentials = await response.json();
+            document.getElementById('loading').style.display = 'none';
+        } catch (error) {
+            console.error("Error loading credentials:", error);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').textContent = 
+                "Failed to load credentials. Please make sure credentials.json exists.";
+        }
+    }
+
+    // Decryption function
+    async function decrypt(encryptedData, key) {
+        try {
+            const dec = new TextDecoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw", new TextEncoder().encode(key), "PBKDF2", false, ["deriveKey"]
+            );
+            
+            const derivedKey = await crypto.subtle.deriveKey(
+                { 
+                    name: "PBKDF2", 
+                    salt: new Uint8Array(encryptedData.salt), 
+                    iterations: 200000, 
+                    hash: "SHA-256" 
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"]
+            );
+            
+            const decrypted = await crypto.subtle.decrypt(
+                { 
+                    name: "AES-GCM", 
+                    iv: new Uint8Array(encryptedData.iv)
+                },
+                derivedKey,
+                Uint8Array.from(atob(encryptedData.ciphertext), c => c.charCodeAt(0))
+            );
+            
+            return dec.decode(decrypted);
+        } catch (error) {
+            console.error("Decryption error:", error);
+            throw new Error("Failed to decrypt data");
+        }
+    }
+
+    // Check if user already has an active session
+    function checkActiveSession(username) {
+        if (activeSessions[username]) {
+            // Check if session is still valid (not expired at midnight)
+            const now = new Date();
+            const lastLogin = new Date(activeSessions[username]);
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            
+            if (now > midnight && lastLogin < midnight) {
+                // Session expired at midnight
+                delete activeSessions[username];
+                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                return false;
+            }
+            return true; // Active session exists
+        }
+        return false; // No active session
+    }
+
+    // Login function
+    async function login() {
+        const id = document.getElementById('userid').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errorDiv = document.getElementById('error');
+        const loginContainer = document.querySelector('.login-container');
+
+        // Clear previous errors
+        errorDiv.textContent = '';
+        
+        if (!id || !password) {
+            errorDiv.textContent = "Please enter both ID and password!";
+            loginContainer.classList.add('shake');
+            setTimeout(() => loginContainer.classList.remove('shake'), 300);
+            return;
+        }
+
+        try {
+            // Check if user already has an active session
+            if (checkActiveSession(id)) {
+                errorDiv.textContent = "This account is already logged in elsewhere. Please try again later.";
+                loginContainer.classList.add('shake');
+                setTimeout(() => loginContainer.classList.remove('shake'), 300);
+                return;
+            }
+            
+            // Find the user in our encrypted credentials
+            const userCredential = encryptedCredentials.find(cred => cred.username === id);
+            
+            if (!userCredential) {
+                errorDiv.textContent = "Invalid username or password!";
+                loginContainer.classList.add('shake');
+                setTimeout(() => loginContainer.classList.remove('shake'), 300);
+                return;
+            }
+            
+            // Decrypt the stored password (using the entered password as key)
+            const decryptedPassword = await decrypt(userCredential.encrypted.password, password);
+            
+            // Compare with entered password
+            if (password === decryptedPassword) {
+                // Register active session
+                activeSessions[id] = new Date().getTime();
+                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                
+                // Store session info
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userId', id);
+                sessionStorage.setItem('loginTime', new Date().getTime());
+                
+                window.location.href = 'index.html';
+            } else {
+                errorDiv.textContent = "Invalid username or password!";
+                loginContainer.classList.add('shake');
+                setTimeout(() => loginContainer.classList.remove('shake'), 300);
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            errorDiv.textContent = "Invalid username or password!";
+            loginContainer.classList.add('shake');
+            setTimeout(() => loginContainer.classList.remove('shake'), 300);
+        }
+    }
+
+    // Allow login on Enter key press
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            login();
+        }
+    });
+
+    // Load credentials when page loads
+    loadCredentials();
+</script>
+
+</body>
+</html>

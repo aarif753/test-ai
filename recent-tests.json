@@ -1,0 +1,25 @@
+{
+  "recentTests": [
+    {
+      "id": "aiats1",
+      "name": "AIATS 1",
+      "date": "2025-09-01",
+      "phase": "Phase 1",
+      "batch": "RM01"
+    },
+    {
+      "id": "ft2",
+      "name": "FT 2",
+      "date": "2025-09-20",
+      "phase": "Phase 2",
+      "batch": "RM02"
+    },
+    {
+      "id": "aiats3",
+      "name": "AIATS 3",
+      "date": "2025-10-01",
+      "phase": "Phase 1",
+      "batch": "RM03"
+    }
+  ]
+}
