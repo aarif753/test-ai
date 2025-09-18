@@ -1,6 +1,6 @@
 {
   "totalQuestions": 180,
-  "passingScore": 70,
+  "passingScore": 50,
   "timeLimit": 10800,
   "questionPrefix": "q/",
   "explanationPrefix": "e/",
