@@ -50,7 +50,7 @@
         }
         
         .login-header h2 {
-            font-weight: 600;
+            fontWeight: 600;
             margin-bottom: 5px;
         }
         
@@ -171,14 +171,14 @@
             padding: 10px;
         }
         
-        .auto-login-notice {
-            background-color: #e8f5e9;
-            border: 1px solid #c8e6c9;
+        .device-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
             border-radius: 6px;
             padding: 10px;
             margin-top: 15px;
             font-size: 14px;
-            color: #2e7d32;
+            color: #856404;
             text-align: center;
         }
     </style>
@@ -207,7 +207,7 @@
         
         <div class="remember-me">
             <input type="checkbox" id="rememberMe" checked>
-            <label for="rememberMe">Remember me on this device</label>
+            <label for="rememberMe">Keep me logged in on this device</label>
         </div>
         
         <button class="btn-login" onclick="login()">Login</button>
@@ -215,8 +215,9 @@
         <div class="error-message" id="error"></div>
         <div class="loading" id="loading" style="display: none;">Loading credentials...</div>
         
-        <div id="autoLoginNotice" class="auto-login-notice" style="display: none;">
-            <i class="fas fa-info-circle"></i> You're being automatically logged in...
+        <div id="deviceNotice" class="device-notice" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <span id="deviceNoticeText"></span>
         </div>
     </div>
     
@@ -229,58 +230,10 @@
     // Global variables
     let encryptedCredentials = [];
     const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    const persistentSessions = JSON.parse(localStorage.getItem('persistentSessions')) || {};
 
-    // Check if already logged in with persistent session
-    function checkPersistentLogin() {
-        const userId = localStorage.getItem('persistentUserId');
-        const sessionId = localStorage.getItem('persistentSessionId');
-        const loginTime = localStorage.getItem('persistentLoginTime');
-        
-        if (userId && sessionId && loginTime) {
-            // Check if session is still valid (not expired)
-            const now = new Date();
-            const lastLogin = new Date(parseInt(loginTime));
-            const sessionAge = now - lastLogin;
-            const maxSessionAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
-            
-            if (sessionAge < maxSessionAge) {
-                // Valid persistent session found
-                document.getElementById('autoLoginNotice').style.display = 'block';
-                document.getElementById('userid').value = userId;
-                
-                // Auto login after a short delay
-                setTimeout(() => {
-                    sessionStorage.setItem('loggedIn', 'true');
-                    sessionStorage.setItem('userId', userId);
-                    sessionStorage.setItem('loginTime', loginTime);
-                    sessionStorage.setItem('sessionId', sessionId);
-                    
-                    window.location.href = 'index.html';
-                }, 1500);
-                
-                return true;
-            } else {
-                // Session expired, clear persistent data
-                clearPersistentSession();
-            }
-        }
-        
-        return false;
-    }
-
-    // Clear persistent session data
-    function clearPersistentSession() {
-        localStorage.removeItem('persistentUserId');
-        localStorage.removeItem('persistentSessionId');
-        localStorage.removeItem('persistentLoginTime');
-    }
-
-    // Check if already logged in (either session or persistent)
+    // Check if already logged in
     if (sessionStorage.getItem('loggedIn') === 'true') {
         window.location.href = 'index.html';
-    } else if (checkPersistentLogin()) {
-        // Persistent login in progress, don't do anything else
     }
 
     // Toggle password visibility
@@ -352,9 +305,25 @@
         }
     }
 
-    // Generate a unique session ID
-    function generateSessionId() {
-        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    // Check if user already has an active session on another device
+    function checkActiveSession(username) {
+        if (activeSessions[username]) {
+            // Check if session is still valid (not expired at midnight)
+            const now = new Date();
+            const sessionTime = new Date(activeSessions[username].loginTime);
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            
+            // If session is still valid today
+            if (now < midnight && sessionTime < midnight) {
+                return true; // Active session exists
+            } else {
+                // Session expired at midnight, remove it
+                delete activeSessions[username];
+                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+            }
+        }
+        return false; // No active session
     }
 
     // Login function
@@ -363,11 +332,14 @@
         const password = document.getElementById('password').value.trim();
         const rememberMe = document.getElementById('rememberMe').checked;
         const errorDiv = document.getElementById('error');
+        const deviceNotice = document.getElementById('deviceNotice');
+        const deviceNoticeText = document.getElementById('deviceNoticeText');
         const loginContainer = document.querySelector('.login-container');
 
-        // Clear previous errors
+        // Clear previous errors and notices
         errorDiv.textContent = '';
-        
+        deviceNotice.style.display = 'none';
+
         if (!id || !password) {
             errorDiv.textContent = "Please enter both ID and password!";
             loginContainer.classList.add('shake');
@@ -376,6 +348,17 @@
         }
 
         try {
+            // Check if user already has an active session on another device
+            if (checkActiveSession(id)) {
+                deviceNoticeText.textContent = "You're already logged in on another device. Logging in here will log you out from the other device.";
+                deviceNotice.style.display = 'block';
+                
+                // Ask for confirmation
+                if (!confirm("You're already logged in on another device. Do you want to continue and log out from the other device?")) {
+                    return;
+                }
+            }
+            
             // Find the user in our encrypted credentials
             const userCredential = encryptedCredentials.find(cred => cred.username === id);
             
@@ -392,31 +375,19 @@
             // Compare with entered password
             if (password === decryptedPassword) {
                 // Create a new session
-                const sessionId = generateSessionId();
                 const loginTime = new Date().getTime();
                 
                 // Store session info
                 sessionStorage.setItem('loggedIn', 'true');
                 sessionStorage.setItem('userId', id);
                 sessionStorage.setItem('loginTime', loginTime);
-                sessionStorage.setItem('sessionId', sessionId);
                 
-                // Store in active sessions
-                if (!activeSessions[id]) {
-                    activeSessions[id] = {};
-                }
-                activeSessions[id][sessionId] = loginTime;
+                // Store in active sessions (replaces any existing session for this user)
+                activeSessions[id] = {
+                    loginTime: loginTime,
+                    rememberMe: rememberMe
+                };
                 localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
-                
-                // If remember me is checked, store persistent session
-                if (rememberMe) {
-                    localStorage.setItem('persistentUserId', id);
-                    localStorage.setItem('persistentSessionId', sessionId);
-                    localStorage.setItem('persistentLoginTime', loginTime);
-                } else {
-                    // Clear any existing persistent session
-                    clearPersistentSession();
-                }
                 
                 window.location.href = 'index.html';
             } else {
