@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced User Activity Tracker</title>
+    <title>User Activity Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -46,13 +46,6 @@
             color: white;
             padding: 25px;
             text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-content {
-            flex: 1;
         }
         
         .header h1 {
@@ -82,7 +75,6 @@
         .stat-card {
             text-align: center;
             transition: transform 0.3s;
-            cursor: pointer;
         }
         
         .stat-card:hover {
@@ -96,14 +88,6 @@
             color: var(--dark);
             border-bottom: 2px solid var(--primary);
             padding-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-title i {
-            font-size: 16px;
-            color: var(--gray);
         }
         
         .stat-value {
@@ -138,11 +122,6 @@
             background-color: var(--primary);
             color: white;
             font-weight: 600;
-            cursor: pointer;
-        }
-        
-        th:hover {
-            background-color: var(--secondary);
         }
         
         tr:nth-child(even) {
@@ -169,47 +148,6 @@
         .status-offline {
             background-color: #ffebee;
             color: #c62828;
-        }
-        
-        .status-blocked {
-            background-color: #fff3e0;
-            color: #ef6c00;
-        }
-        
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.3s;
-            margin-right: 5px;
-        }
-        
-        .btn-block {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-unblock {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-logout {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .btn-view {
-            background: var(--info);
-            color: white;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: scale(1.05);
         }
         
         .footer {
@@ -246,11 +184,6 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .search-box button:hover {
-            background: var(--secondary);
         }
         
         .last-updated {
@@ -258,54 +191,6 @@
             font-size: 12px;
             color: var(--gray);
             margin-top: 10px;
-        }
-        
-        .filter-options {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 8px 15px;
-            background: #e9ecef;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .filter-btn:hover {
-            background: #dde1e6;
-        }
-        
-        .view-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .export-btn {
-            padding: 8px 15px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .export-btn:hover {
-            background: #3aafd3;
         }
         
         @media (max-width: 768px) {
@@ -316,99 +201,6 @@
             th, td {
                 padding: 8px 10px;
             }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .filter-options {
-                flex-direction: column;
-            }
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
-        }
-        
-        .user-detail {
-            margin-bottom: 15px;
-        }
-        
-        .user-detail label {
-            font-weight: 600;
-            color: var(--dark);
-            display: block;
-            margin-bottom: 5px;
-        }
-        
-        .user-detail span {
-            color: var(--gray);
-        }
-        
-        .activity-log {
-            margin-top: 20px;
-        }
-        
-        .log-entry {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-        
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-        
-        .log-time {
-            color: var(--gray);
-            font-size: 12px;
-        }
-        
-        .log-action {
-            font-weight: 500;
         }
     </style>
 </head>
@@ -416,56 +208,46 @@
 
 <div class="container">
     <div class="header">
-        <div class="header-content">
-            <h1>Enhanced User Activity Tracker</h1>
-            <p>Monitor and manage user activity for your system</p>
-        </div>
-        <button class="export-btn" onclick="exportData()"><i class="fas fa-download"></i> Export Data</button>
+        <h1>User Activity Tracker</h1>
+        <p>Monitor user login activity for your system</p>
     </div>
     
     <div class="dashboard">
-        <div class="card stat-card" onclick="filterUsers('all')">
-            <div class="card-title">Total Users <i class="fas fa-users"></i></div>
+        <div class="card stat-card">
+            <div class="card-title">Total Users</div>
             <div class="stat-value" id="totalUsers">0</div>
             <div class="stat-label">Registered in system</div>
         </div>
         
-        <div class="card stat-card" onclick="filterUsers('online')">
-            <div class="card-title">Active Sessions <i class="fas fa-plug"></i></div>
+        <div class="card stat-card">
+            <div class="card-title">Active Sessions</div>
             <div class="stat-value" id="activeSessions">0</div>
             <div class="stat-label">Currently logged in</div>
         </div>
         
-        <div class="card stat-card" onclick="filterUsers('blocked')">
-            <div class="card-title">Blocked Users <i class="fas fa-ban"></i></div>
-            <div class="stat-value" id="blockedUsers">0</div>
-            <div class="stat-label">Access restricted</div>
+        <div class="card stat-card">
+            <div class="card-title">Total Logins</div>
+            <div class="stat-value" id="totalLogins">0</div>
+            <div class="stat-label">All-time login count</div>
         </div>
         
         <div class="card user-list">
-            <div class="view-controls">
-                <div class="filter-options">
-                    <button class="filter-btn active" onclick="filterUsers('all')">All Users</button>
-                    <button class="filter-btn" onclick="filterUsers('online')">Online</button>
-                    <button class="filter-btn" onclick="filterUsers('offline')">Offline</button>
-                    <button class="filter-btn" onclick="filterUsers('blocked')">Blocked</button>
-                </div>
-            </div>
+            <div class="card-title">User Activity</div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search users..." oninput="searchUsers()">
+                <input type="text" id="searchInput" placeholder="Search users...">
+                <button onclick="searchUsers()"><i class="fas fa-search"></i> Search</button>
                 <button onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
             
             <table>
                 <thead>
                     <tr>
-                        <th onclick="sortTable('username')">Username <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable('status')">Status <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable('lastLogin')">Last Login <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable('loginCount')">Login Count <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable('currentDevice')">Current Device <i class="fas fa-sort"></i></th>
-                        <th>Actions</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                        <th>Login Count</th>
+                        <th>Current Device</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
@@ -480,30 +262,13 @@
     </div>
     
     <div class="footer">
-        <p>&copy; 2025 Enhanced User Activity Tracker. All rights reserved. @aarifalam0105</p>
-    </div>
-</div>
-
-<!-- User Detail Modal -->
-<div class="modal" id="userModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title" id="modalUserName">User Details</h2>
-            <button class="close-modal" onclick="closeModal()">&times;</button>
-        </div>
-        <div id="modalUserContent">
-            <!-- User details will be populated here -->
-        </div>
+        <p>&copy; 2025 User Activity Tracker. All rights reserved. @aarifalam0105</p>
     </div>
 </div>
 
 <script>
     // Load user data from credentials.json
     let users = [];
-    let filteredUsers = [];
-    let currentFilter = 'all';
-    let sortField = 'username';
-    let sortDirection = 'asc';
     
     async function loadUserCredentials() {
         try {
@@ -518,9 +283,7 @@
                 status: 'offline',
                 lastLogin: null,
                 loginCount: 0,
-                currentDevice: null,
-                blocked: false,
-                loginHistory: []
+                currentDevice: null
             }));
             
             // Load activity data from localStorage
@@ -529,8 +292,8 @@
             console.error("Error loading credentials:", error);
             // Fallback to sample data if credentials.json is not available
             users = [
-                { username: 'aa', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, blocked: false, loginHistory: [] },
-                { username: 'bb', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, blocked: false, loginHistory: [] }
+                { username: 'aa', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null },
+                { username: 'bb', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null }
             ];
             loadActivityData();
         }
@@ -540,32 +303,21 @@
     function loadActivityData() {
         const userActivity = JSON.parse(localStorage.getItem('userActivity')) || {};
         const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-        const blockedUsers = JSON.parse(localStorage.getItem('blockedUsers')) || {};
         
         // Update user data with activity information
         users.forEach(user => {
             if (userActivity[user.username]) {
                 user.loginCount = userActivity[user.username].loginCount || 0;
                 user.lastLogin = userActivity[user.username].lastLogin || null;
-                user.loginHistory = userActivity[user.username].loginHistory || [];
             }
             
-            // Check if user is blocked
-            user.blocked = blockedUsers[user.username] || false;
-            
-            // Check if user is currently active (and not blocked)
-            if (activeSessions[user.username] && !user.blocked) {
+            // Check if user is currently active
+            if (activeSessions[user.username]) {
                 user.status = 'online';
                 user.currentDevice = 'Device ' + (activeSessions[user.username].loginTime % 10000);
             } else {
                 user.status = 'offline';
                 user.currentDevice = null;
-                
-                // If user is blocked and online, force logout
-                if (user.blocked && activeSessions[user.username]) {
-                    delete activeSessions[user.username];
-                    localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
-                }
             }
         });
         
@@ -583,24 +335,9 @@
             
             userActivity[user.username].loginCount = user.loginCount;
             userActivity[user.username].lastLogin = user.lastLogin;
-            userActivity[user.username].loginHistory = user.loginHistory;
         });
         
         localStorage.setItem('userActivity', JSON.stringify(userActivity));
-        updateDashboard();
-    }
-    
-    // Save blocked users to localStorage
-    function saveBlockedUsers() {
-        const blockedUsers = {};
-        
-        users.forEach(user => {
-            if (user.blocked) {
-                blockedUsers[user.username] = true;
-            }
-        });
-        
-        localStorage.setItem('blockedUsers', JSON.stringify(blockedUsers));
         updateDashboard();
     }
     
@@ -613,85 +350,15 @@
         const activeSessions = users.filter(user => user.status === 'online').length;
         document.getElementById('activeSessions').textContent = activeSessions;
         
-        // Update blocked users
-        const blockedUsers = users.filter(user => user.blocked).length;
-        document.getElementById('blockedUsers').textContent = blockedUsers;
+        // Update total logins
+        const totalLogins = users.reduce((total, user) => total + user.loginCount, 0);
+        document.getElementById('totalLogins').textContent = totalLogins;
         
-        // Apply current filter
-        filterUsers(currentFilter);
+        // Update user table
+        renderUserTable();
         
         // Update last updated time
         document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
-    }
-    
-    // Filter users based on status
-    function filterUsers(filter) {
-        currentFilter = filter;
-        
-        // Update active filter buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
-        
-        switch(filter) {
-            case 'online':
-                filteredUsers = users.filter(user => user.status === 'online');
-                break;
-            case 'offline':
-                filteredUsers = users.filter(user => user.status === 'offline');
-                break;
-            case 'blocked':
-                filteredUsers = users.filter(user => user.blocked);
-                break;
-            default:
-                filteredUsers = [...users];
-        }
-        
-        // Apply search filter if any
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        if (searchTerm) {
-            filteredUsers = filteredUsers.filter(user => 
-                user.username.toLowerCase().includes(searchTerm)
-            );
-        }
-        
-        // Apply sorting
-        sortUsers();
-        
-        renderUserTable();
-    }
-    
-    // Sort users
-    function sortUsers() {
-        filteredUsers.sort((a, b) => {
-            let valueA = a[sortField];
-            let valueB = b[sortField];
-            
-            // Handle null values
-            if (valueA === null) valueA = '';
-            if (valueB === null) valueB = '';
-            
-            // Compare values
-            if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
-            if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
-            return 0;
-        });
-    }
-    
-    // Sort table by column
-    function sortTable(field) {
-        if (sortField === field) {
-            // Toggle sort direction
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            // New sort field, default to ascending
-            sortField = field;
-            sortDirection = 'asc';
-        }
-        
-        sortUsers();
-        renderUserTable();
     }
     
     // Render user table
@@ -699,14 +366,13 @@
         const tableBody = document.getElementById('userTableBody');
         tableBody.innerHTML = '';
         
-        if (filteredUsers.length === 0) {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: var(--gray);">No users found</td>`;
-            tableBody.appendChild(row);
-            return;
-        }
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         
-        filteredUsers.forEach(user => {
+        users.forEach(user => {
+            if (searchTerm && !user.username.toLowerCase().includes(searchTerm)) {
+                return; // Skip if doesn't match search
+            }
+            
             const row = document.createElement('tr');
             
             // Format last login date
@@ -716,35 +382,12 @@
                 formattedDate = lastLogin.toLocaleDateString() + ' ' + lastLogin.toLocaleTimeString();
             }
             
-            // Determine status class and text
-            let statusClass = 'status-offline';
-            let statusText = 'Offline';
-            
-            if (user.blocked) {
-                statusClass = 'status-blocked';
-                statusText = 'Blocked';
-            } else if (user.status === 'online') {
-                statusClass = 'status-online';
-                statusText = 'Online';
-            }
-            
             row.innerHTML = `
                 <td>${user.username}</td>
-                <td><span class="status ${statusClass}">${statusText}</span></td>
+                <td><span class="status ${user.status === 'online' ? 'status-online' : 'status-offline'}">${user.status === 'online' ? 'Online' : 'Offline'}</span></td>
                 <td>${formattedDate}</td>
                 <td>${user.loginCount}</td>
                 <td>${user.currentDevice || '-'}</td>
-                <td>
-                    <button class="btn btn-view" onclick="viewUser('${user.username}')"><i class="fas fa-eye"></i></button>
-                    ${user.blocked ? 
-                        `<button class="btn btn-unblock" onclick="unblockUser('${user.username}')"><i class="fas fa-check-circle"></i></button>` : 
-                        `<button class="btn btn-block" onclick="blockUser('${user.username}')"><i class="fas fa-ban"></i></button>`
-                    }
-                    ${user.status === 'online' ? 
-                        `<button class="btn btn-logout" onclick="forceLogout('${user.username}')"><i class="fas fa-sign-out-alt"></i></button>` : 
-                        ''
-                    }
-                </td>
             `;
             
             tableBody.appendChild(row);
@@ -753,178 +396,12 @@
     
     // Search users
     function searchUsers() {
-        filterUsers(currentFilter);
+        renderUserTable();
     }
     
     // Refresh data
     function refreshData() {
         loadActivityData();
-    }
-    
-    // Block a user
-    function blockUser(username) {
-        const user = users.find(u => u.username === username);
-        if (user) {
-            user.blocked = true;
-            user.status = 'offline';
-            
-            // Remove from active sessions
-            const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-            if (activeSessions[username]) {
-                delete activeSessions[username];
-                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
-                
-                // Add to login history
-                user.loginHistory.unshift({
-                    action: 'force_logout',
-                    timestamp: new Date().getTime(),
-                    reason: 'User blocked by admin'
-                });
-            }
-            
-            // Add to login history
-            user.loginHistory.unshift({
-                action: 'block',
-                timestamp: new Date().getTime(),
-                reason: 'User blocked by admin'
-            });
-            
-            saveBlockedUsers();
-            saveActivityData();
-            alert(`User ${username} has been blocked`);
-        }
-    }
-    
-    // Unblock a user
-    function unblockUser(username) {
-        const user = users.find(u => u.username === username);
-        if (user) {
-            user.blocked = false;
-            
-            // Add to login history
-            user.loginHistory.unshift({
-                action: 'unblock',
-                timestamp: new Date().getTime(),
-                reason: 'User unblocked by admin'
-            });
-            
-            saveBlockedUsers();
-            saveActivityData();
-            alert(`User ${username} has been unblocked`);
-        }
-    }
-    
-    // Force logout a user
-    function forceLogout(username) {
-        const user = users.find(u => u.username === username);
-        if (user && user.status === 'online') {
-            user.status = 'offline';
-            user.currentDevice = null;
-            
-            // Remove from active sessions
-            const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-            if (activeSessions[username]) {
-                delete activeSessions[username];
-                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
-            }
-            
-            // Add to login history
-            user.loginHistory.unshift({
-                action: 'force_logout',
-                timestamp: new Date().getTime(),
-                reason: 'Forced logout by admin'
-            });
-            
-            saveActivityData();
-            alert(`User ${username} has been logged out`);
-        } else {
-            alert('User is not currently logged in');
-        }
-    }
-    
-    // View user details
-    function viewUser(username) {
-        const user = users.find(u => u.username === username);
-        if (user) {
-            document.getElementById('modalUserName').textContent = `User: ${user.username}`;
-            
-            // Format last login date
-            let formattedDate = 'Never';
-            if (user.lastLogin) {
-                const lastLogin = new Date(user.lastLogin);
-                formattedDate = lastLogin.toLocaleDateString() + ' ' + lastLogin.toLocaleTimeString();
-            }
-            
-            // Determine status text
-            let statusText = 'Offline';
-            if (user.blocked) {
-                statusText = 'Blocked';
-            } else if (user.status === 'online') {
-                statusText = 'Online';
-            }
-            
-            let loginHistoryHTML = '';
-            if (user.loginHistory && user.loginHistory.length > 0) {
-                loginHistoryHTML = '<h3>Recent Activity</h3>';
-                user.loginHistory.slice(0, 10).forEach(log => {
-                    const logTime = new Date(log.timestamp);
-                    loginHistoryHTML += `
-                        <div class="log-entry">
-                            <div class="log-time">${logTime.toLocaleDateString()} ${logTime.toLocaleTimeString()}</div>
-                            <div class="log-action">${log.action}${log.reason ? ` - ${log.reason}` : ''}</div>
-                        </div>
-                    `;
-                });
-            } else {
-                loginHistoryHTML = '<p>No activity history available.</p>';
-            }
-            
-            document.getElementById('modalUserContent').innerHTML = `
-                <div class="user-detail">
-                    <label>Username</label>
-                    <span>${user.username}</span>
-                </div>
-                <div class="user-detail">
-                    <label>Status</label>
-                    <span>${statusText}</span>
-                </div>
-                <div class="user-detail">
-                    <label>Last Login</label>
-                    <span>${formattedDate}</span>
-                </div>
-                <div class="user-detail">
-                    <label>Login Count</label>
-                    <span>${user.loginCount}</span>
-                </div>
-                <div class="user-detail">
-                    <label>Blocked</label>
-                    <span>${user.blocked ? 'Yes' : 'No'}</span>
-                </div>
-                <div class="activity-log">
-                    ${loginHistoryHTML}
-                </div>
-            `;
-            
-            document.getElementById('userModal').style.display = 'flex';
-        }
-    }
-    
-    // Close modal
-    function closeModal() {
-        document.getElementById('userModal').style.display = 'none';
-    }
-    
-    // Export data
-    function exportData() {
-        const dataStr = JSON.stringify(users, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const exportFileDefaultName = 'user-activity-data.json';
-        
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
     }
     
     // Monitor active sessions for changes
@@ -947,14 +424,6 @@
     
     // Also refresh every 30 seconds to catch any changes
     setInterval(loadActivityData, 30000);
-    
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('userModal');
-        if (event.target === modal) {
-            closeModal();
-        }
-    };
 </script>
 
 </body>
