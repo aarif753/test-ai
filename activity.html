@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a4b8c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card {
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .user-list {
+            grid-column: 1 / -1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background-color: #e7f6e9;
+            color: #2e7d32;
+        }
+        
+        .status-offline {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--gray);
+            border-top: 1px solid #eee;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .search-box button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .last-updated {
+            text-align: right;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>User Activity Tracker</h1>
+        <p>Monitor user login activity for your system</p>
+    </div>
+    
+    <div class="dashboard">
+        <div class="card stat-card">
+            <div class="card-title">Total Users</div>
+            <div class="stat-value" id="totalUsers">0</div>
+            <div class="stat-label">Registered in system</div>
+        </div>
+        
+        <div class="card stat-card">
+            <div class="card-title">Active Sessions</div>
+            <div class="stat-value" id="activeSessions">0</div>
+            <div class="stat-label">Currently logged in</div>
+        </div>
+        
+        <div class="card stat-card">
+            <div class="card-title">Total Logins</div>
+            <div class="stat-value" id="totalLogins">0</div>
+            <div class="stat-label">All-time login count</div>
+        </div>
+        
+        <div class="card user-list">
+            <div class="card-title">User Activity</div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search users...">
+                <button onclick="searchUsers()"><i class="fas fa-search"></i> Search</button>
+                <button onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                        <th>Login Count</th>
+                        <th>Current Device</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- User data will be populated here -->
+                </tbody>
+            </table>
+            
+            <div class="last-updated" id="lastUpdated">
+                Last updated: <span id="updateTime">Never</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 User Activity Tracker. All rights reserved. @aarifalam0105</p>
+    </div>
+</div>
+
+<script>
+    // Load user data from credentials.json
+    let users = [];
+    
+    async function loadUserCredentials() {
+        try {
+            const response = await fetch('credentials.json');
+            if (!response.ok) {
+                throw new Error('Failed to load credentials');
+            }
+            
+            const credentials = await response.json();
+            users = credentials.map(cred => ({
+                username: cred.username,
+                status: 'offline',
+                lastLogin: null,
+                loginCount: 0,
+                currentDevice: null
+            }));
+            
+            // Load activity data from localStorage
+            loadActivityData();
+        } catch (error) {
+            console.error("Error loading credentials:", error);
+            // Fallback to sample data if credentials.json is not available
+            users = [
+                { username: 'aa', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null },
+                { username: 'bb', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null }
+            ];
+            loadActivityData();
+        }
+    }
+    
+    // Load user activity data from localStorage
+    function loadActivityData() {
+        const userActivity = JSON.parse(localStorage.getItem('userActivity')) || {};
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+        
+        // Update user data with activity information
+        users.forEach(user => {
+            if (userActivity[user.username]) {
+                user.loginCount = userActivity[user.username].loginCount || 0;
+                user.lastLogin = userActivity[user.username].lastLogin || null;
+            }
+            
+            // Check if user is currently active
+            if (activeSessions[user.username]) {
+                user.status = 'online';
+                user.currentDevice = 'Device ' + (activeSessions[user.username].loginTime % 10000);
+            } else {
+                user.status = 'offline';
+                user.currentDevice = null;
+            }
+        });
+        
+        updateDashboard();
+    }
+    
+    // Save user activity data to localStorage
+    function saveActivityData() {
+        const userActivity = JSON.parse(localStorage.getItem('userActivity')) || {};
+        
+        users.forEach(user => {
+            if (!userActivity[user.username]) {
+                userActivity[user.username] = {};
+            }
+            
+            userActivity[user.username].loginCount = user.loginCount;
+            userActivity[user.username].lastLogin = user.lastLogin;
+        });
+        
+        localStorage.setItem('userActivity', JSON.stringify(userActivity));
+        updateDashboard();
+    }
+    
+    // Update dashboard statistics
+    function updateDashboard() {
+        // Update total users
+        document.getElementById('totalUsers').textContent = users.length;
+        
+        // Update active sessions (online users)
+        const activeSessions = users.filter(user => user.status === 'online').length;
+        document.getElementById('activeSessions').textContent = activeSessions;
+        
+        // Update total logins
+        const totalLogins = users.reduce((total, user) => total + user.loginCount, 0);
+        document.getElementById('totalLogins').textContent = totalLogins;
+        
+        // Update user table
+        renderUserTable();
+        
+        // Update last updated time
+        document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
+    }
+    
+    // Render user table
+    function renderUserTable() {
+        const tableBody = document.getElementById('userTableBody');
+        tableBody.innerHTML = '';
+        
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        users.forEach(user => {
+            if (searchTerm && !user.username.toLowerCase().includes(searchTerm)) {
+                return; // Skip if doesn't match search
+            }
+            
+            const row = document.createElement('tr');
+            
+            // Format last login date
+            let formattedDate = 'Never';
+            if (user.lastLogin) {
+                const lastLogin = new Date(user.lastLogin);
+                formattedDate = lastLogin.toLocaleDateString() + ' ' + lastLogin.toLocaleTimeString();
+            }
+            
+            row.innerHTML = `
+                <td>${user.username}</td>
+                <td><span class="status ${user.status === 'online' ? 'status-online' : 'status-offline'}">${user.status === 'online' ? 'Online' : 'Offline'}</span></td>
+                <td>${formattedDate}</td>
+                <td>${user.loginCount}</td>
+                <td>${user.currentDevice || '-'}</td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+    }
+    
+    // Search users
+    function searchUsers() {
+        renderUserTable();
+    }
+    
+    // Refresh data
+    function refreshData() {
+        loadActivityData();
+    }
+    
+    // Monitor active sessions for changes
+    function monitorSessions() {
+        let lastActiveSessions = JSON.stringify(localStorage.getItem('activeSessions'));
+        
+        setInterval(() => {
+            const currentActiveSessions = JSON.stringify(localStorage.getItem('activeSessions'));
+            
+            if (currentActiveSessions !== lastActiveSessions) {
+                lastActiveSessions = currentActiveSessions;
+                loadActivityData();
+            }
+        }, 2000); // Check every 2 seconds
+    }
+    
+    // Initialize the tracker
+    loadUserCredentials();
+    monitorSessions();
+    
+    // Also refresh every 30 seconds to catch any changes
+    setInterval(loadActivityData, 30000);
+</script>
+
+</body>
+</html>
