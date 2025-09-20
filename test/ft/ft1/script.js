@@ -1,15 +1,13 @@
-// Load quizConfig from JSON
 let quizConfig = {};
 
-fetch('quizConfig.json')
+fetch("quizConfig.json")
   .then(response => response.json())
-  .then(config => {
-    quizConfig = config;
-    initQuiz(); // Start after config is loaded
+  .then(data => {
+    quizConfig = data;
+    console.log("Quiz config loaded:", quizConfig);
   })
-  .catch(error => {
-    console.error('Error loading quizConfig:', error);
-  });
+  .catch(error => console.error("Error loading quizConfig.json:", error));
+
 
 // Quiz State
 const quizState = {
@@ -26,8 +24,6 @@ const quizState = {
     answers: [],
     completed: false
 };
-
-// ... (rest of your script remains exactly the same, no other edits)
 
 // DOM Elements
 const elements = {
@@ -55,7 +51,6 @@ const elements = {
     timeTaken: document.getElementById('timeTaken'),
     correctCount: document.getElementById('correctCount'),
     totalCount: document.getElementById('totalCount'),
-    accuracyPercent: document.getElementById('accuracyPercent'),
     totalTimeSpent: document.getElementById('totalTimeSpent'),
     questionReview: document.getElementById('questionReview'),
     resultsProgressBar: document.getElementById('resultsProgressBar'),
@@ -337,7 +332,6 @@ function showResults() {
     
     elements.correctCount.textContent = quizState.correctAnswers;
     elements.totalCount.textContent = quizConfig.totalQuestions;
-    elements.accuracyPercent.textContent = quizState.score;
     elements.totalTimeSpent.textContent = Math.round(minutes + seconds / 60);
     
     elements.resultsProgressBar.style.width = `${quizState.score}%`;
