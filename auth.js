@@ -9,9 +9,10 @@ function checkAuth() {
     const loggedIn = sessionStorage.getItem('loggedIn');
     const userId = sessionStorage.getItem('userId');
     const loginTime = sessionStorage.getItem('loginTime');
+    const sessionId = sessionStorage.getItem('sessionId');
     
     // If not logged in, redirect to login
-    if (loggedIn !== 'true' || !userId || !loginTime) {
+    if (loggedIn !== 'true' || !userId || !loginTime || !sessionId) {
         redirectToLogin();
         return false;
     }
@@ -28,30 +29,44 @@ function checkAuth() {
         return false;
     }
     
-    // Check if this is the active session
-    if (!activeSessions[userId] || activeSessions[userId] !== parseInt(loginTime)) {
-        // Another device/browser has logged in
-        logout();
-        alert("This account has been logged in from another device. You have been logged out.");
-        return false;
+    // Check if this session exists in active sessions (if remember me was checked)
+    if (activeSessions[userId] && activeSessions[userId][sessionId]) {
+        // Session is valid and remembered
+        return true;
     }
     
-    return true;
+    // If not in active sessions, it's a temporary session (remember me wasn't checked)
+    // Check if it's the same browser session
+    if (sessionId.startsWith('session_')) {
+        return true;
+    }
+    
+    // Invalid session
+    logout();
+    alert("Your session is invalid. Please login again.");
+    return false;
 }
 
 // Redirect to login page
 function redirectToLogin() {
     sessionStorage.clear();
-    window.location.href = '/login.html';
+    window.location.href = 'login.html';
 }
 
 // Logout function
 function logout() {
     const userId = sessionStorage.getItem('userId');
+    const sessionId = sessionStorage.getItem('sessionId');
     
-    // Remove from active sessions
-    if (userId && activeSessions[userId]) {
-        delete activeSessions[userId];
+    // Remove from active sessions if it exists there
+    if (userId && sessionId && activeSessions[userId] && activeSessions[userId][sessionId]) {
+        delete activeSessions[userId][sessionId];
+        
+        // If no more sessions for this user, remove the user entry
+        if (Object.keys(activeSessions[userId]).length === 0) {
+            delete activeSessions[userId];
+        }
+        
         localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
     }
     
@@ -59,7 +74,7 @@ function logout() {
     sessionStorage.clear();
     
     // Redirect to login
-    window.location.href = '/login.html';
+    window.location.href = 'login.html';
 }
 
 // Auto-check authentication on page load
@@ -103,5 +118,4 @@ document.addEventListener('DOMContentLoaded', function() {
 if (window.location !== window.parent.location) {
     // Page is in an iframe
     redirectToLogin();
-
 }
