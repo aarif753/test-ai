@@ -170,6 +170,17 @@
             color: var(--gray);
             padding: 10px;
         }
+        
+        .auto-login-notice {
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #2e7d32;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -195,7 +206,7 @@
         </div>
         
         <div class="remember-me">
-            <input type="checkbox" id="rememberMe">
+            <input type="checkbox" id="rememberMe" checked>
             <label for="rememberMe">Remember me on this device</label>
         </div>
         
@@ -203,6 +214,10 @@
         
         <div class="error-message" id="error"></div>
         <div class="loading" id="loading" style="display: none;">Loading credentials...</div>
+        
+        <div id="autoLoginNotice" class="auto-login-notice" style="display: none;">
+            <i class="fas fa-info-circle"></i> You're being automatically logged in...
+        </div>
     </div>
     
     <div class="login-footer">
@@ -214,10 +229,58 @@
     // Global variables
     let encryptedCredentials = [];
     const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+    const persistentSessions = JSON.parse(localStorage.getItem('persistentSessions')) || {};
 
-    // Check if already logged in
+    // Check if already logged in with persistent session
+    function checkPersistentLogin() {
+        const userId = localStorage.getItem('persistentUserId');
+        const sessionId = localStorage.getItem('persistentSessionId');
+        const loginTime = localStorage.getItem('persistentLoginTime');
+        
+        if (userId && sessionId && loginTime) {
+            // Check if session is still valid (not expired)
+            const now = new Date();
+            const lastLogin = new Date(parseInt(loginTime));
+            const sessionAge = now - lastLogin;
+            const maxSessionAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            
+            if (sessionAge < maxSessionAge) {
+                // Valid persistent session found
+                document.getElementById('autoLoginNotice').style.display = 'block';
+                document.getElementById('userid').value = userId;
+                
+                // Auto login after a short delay
+                setTimeout(() => {
+                    sessionStorage.setItem('loggedIn', 'true');
+                    sessionStorage.setItem('userId', userId);
+                    sessionStorage.setItem('loginTime', loginTime);
+                    sessionStorage.setItem('sessionId', sessionId);
+                    
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+                return true;
+            } else {
+                // Session expired, clear persistent data
+                clearPersistentSession();
+            }
+        }
+        
+        return false;
+    }
+
+    // Clear persistent session data
+    function clearPersistentSession() {
+        localStorage.removeItem('persistentUserId');
+        localStorage.removeItem('persistentSessionId');
+        localStorage.removeItem('persistentLoginTime');
+    }
+
+    // Check if already logged in (either session or persistent)
     if (sessionStorage.getItem('loggedIn') === 'true') {
         window.location.href = 'index.html';
+    } else if (checkPersistentLogin()) {
+        // Persistent login in progress, don't do anything else
     }
 
     // Toggle password visibility
@@ -338,13 +401,21 @@
                 sessionStorage.setItem('loginTime', loginTime);
                 sessionStorage.setItem('sessionId', sessionId);
                 
-                // If remember me is checked, store session in localStorage
+                // Store in active sessions
+                if (!activeSessions[id]) {
+                    activeSessions[id] = {};
+                }
+                activeSessions[id][sessionId] = loginTime;
+                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                
+                // If remember me is checked, store persistent session
                 if (rememberMe) {
-                    if (!activeSessions[id]) {
-                        activeSessions[id] = {};
-                    }
-                    activeSessions[id][sessionId] = loginTime;
-                    localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                    localStorage.setItem('persistentUserId', id);
+                    localStorage.setItem('persistentSessionId', sessionId);
+                    localStorage.setItem('persistentLoginTime', loginTime);
+                } else {
+                    // Clear any existing persistent session
+                    clearPersistentSession();
                 }
                 
                 window.location.href = 'index.html';
