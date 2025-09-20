@@ -3,6 +3,7 @@
 
 // Global session variables
 const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+const persistentSessions = JSON.parse(localStorage.getItem('persistentSessions')) || {};
 
 // Check authentication status
 function checkAuth() {
@@ -11,10 +12,44 @@ function checkAuth() {
     const loginTime = sessionStorage.getItem('loginTime');
     const sessionId = sessionStorage.getItem('sessionId');
     
-    // If not logged in, redirect to login
+    // If not logged in, check for persistent session
     if (loggedIn !== 'true' || !userId || !loginTime || !sessionId) {
-        redirectToLogin();
-        return false;
+        const persistentUserId = localStorage.getItem('persistentUserId');
+        const persistentSessionId = localStorage.getItem('persistentSessionId');
+        const persistentLoginTime = localStorage.getItem('persistentLoginTime');
+        
+        if (persistentUserId && persistentSessionId && persistentLoginTime) {
+            // Check if persistent session is still valid (not expired)
+            const now = new Date();
+            const lastLogin = new Date(parseInt(persistentLoginTime));
+            const sessionAge = now - lastLogin;
+            const maxSessionAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            
+            if (sessionAge < maxSessionAge) {
+                // Valid persistent session found, restore it
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userId', persistentUserId);
+                sessionStorage.setItem('loginTime', persistentLoginTime);
+                sessionStorage.setItem('sessionId', persistentSessionId);
+                
+                // Add to active sessions
+                if (!activeSessions[persistentUserId]) {
+                    activeSessions[persistentUserId] = {};
+                }
+                activeSessions[persistentUserId][persistentSessionId] = persistentLoginTime;
+                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                
+                return true;
+            } else {
+                // Session expired, clear persistent data
+                clearPersistentSession();
+                redirectToLogin();
+                return false;
+            }
+        } else {
+            redirectToLogin();
+            return false;
+        }
     }
     
     // Check if session expired at midnight
@@ -29,15 +64,9 @@ function checkAuth() {
         return false;
     }
     
-    // Check if this session exists in active sessions (if remember me was checked)
+    // Check if this session exists in active sessions
     if (activeSessions[userId] && activeSessions[userId][sessionId]) {
-        // Session is valid and remembered
-        return true;
-    }
-    
-    // If not in active sessions, it's a temporary session (remember me wasn't checked)
-    // Check if it's the same browser session
-    if (sessionId.startsWith('session_')) {
+        // Session is valid
         return true;
     }
     
@@ -45,6 +74,13 @@ function checkAuth() {
     logout();
     alert("Your session is invalid. Please login again.");
     return false;
+}
+
+// Clear persistent session data
+function clearPersistentSession() {
+    localStorage.removeItem('persistentUserId');
+    localStorage.removeItem('persistentSessionId');
+    localStorage.removeItem('persistentLoginTime');
 }
 
 // Redirect to login page
@@ -68,6 +104,11 @@ function logout() {
         }
         
         localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+    }
+    
+    // Clear persistent session if it exists
+    if (userId === localStorage.getItem('persistentUserId')) {
+        clearPersistentSession();
     }
     
     // Clear session storage
