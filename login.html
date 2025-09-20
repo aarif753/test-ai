@@ -105,6 +105,16 @@
             cursor: pointer;
         }
         
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
         .btn-login {
             width: 100%;
             padding: 12px;
@@ -184,6 +194,11 @@
             <i class="fas fa-eye toggle-password" id="togglePassword"></i>
         </div>
         
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">Remember me on this device</label>
+        </div>
+        
         <button class="btn-login" onclick="login()">Login</button>
         
         <div class="error-message" id="error"></div>
@@ -191,7 +206,7 @@
     </div>
     
     <div class="login-footer">
-        <p>&copy; 2025 Secure Login System. All rights reserved.| @AarifAlam0105</p>
+        <p>&copy; 2025 Secure Login System. All rights reserved. @aarifalam0105</p>
     </div>
 </div>
 
@@ -274,30 +289,16 @@
         }
     }
 
-    // Check if user already has an active session
-    function checkActiveSession(username) {
-        if (activeSessions[username]) {
-            // Check if session is still valid (not expired at midnight)
-            const now = new Date();
-            const lastLogin = new Date(activeSessions[username]);
-            const midnight = new Date();
-            midnight.setHours(24, 0, 0, 0);
-            
-            if (now > midnight && lastLogin < midnight) {
-                // Session expired at midnight
-                delete activeSessions[username];
-                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
-                return false;
-            }
-            return true; // Active session exists
-        }
-        return false; // No active session
+    // Generate a unique session ID
+    function generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
     // Login function
     async function login() {
         const id = document.getElementById('userid').value.trim();
         const password = document.getElementById('password').value.trim();
+        const rememberMe = document.getElementById('rememberMe').checked;
         const errorDiv = document.getElementById('error');
         const loginContainer = document.querySelector('.login-container');
 
@@ -312,14 +313,6 @@
         }
 
         try {
-            // Check if user already has an active session
-            if (checkActiveSession(id)) {
-                errorDiv.textContent = "This account is already logged in elsewhere. Please try again later.";
-                loginContainer.classList.add('shake');
-                setTimeout(() => loginContainer.classList.remove('shake'), 300);
-                return;
-            }
-            
             // Find the user in our encrypted credentials
             const userCredential = encryptedCredentials.find(cred => cred.username === id);
             
@@ -335,14 +328,24 @@
             
             // Compare with entered password
             if (password === decryptedPassword) {
-                // Register active session
-                activeSessions[id] = new Date().getTime();
-                localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                // Create a new session
+                const sessionId = generateSessionId();
+                const loginTime = new Date().getTime();
                 
                 // Store session info
                 sessionStorage.setItem('loggedIn', 'true');
                 sessionStorage.setItem('userId', id);
-                sessionStorage.setItem('loginTime', new Date().getTime());
+                sessionStorage.setItem('loginTime', loginTime);
+                sessionStorage.setItem('sessionId', sessionId);
+                
+                // If remember me is checked, store session in localStorage
+                if (rememberMe) {
+                    if (!activeSessions[id]) {
+                        activeSessions[id] = {};
+                    }
+                    activeSessions[id][sessionId] = loginTime;
+                    localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+                }
                 
                 window.location.href = 'index.html';
             } else {
@@ -370,5 +373,4 @@
 </script>
 
 </body>
-
 </html>
