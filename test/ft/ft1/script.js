@@ -53,7 +53,6 @@ const elements = {
     timeTaken: document.getElementById('timeTaken'),
     correctCount: document.getElementById('correctCount'),
     totalCount: document.getElementById('totalCount'),
-    accuracyPercent: document.getElementById('accuracyPercent'),
     totalTimeSpent: document.getElementById('totalTimeSpent'),
     questionReview: document.getElementById('questionReview'),
     resultsProgressBar: document.getElementById('resultsProgressBar'),
@@ -366,7 +365,6 @@ function showResults() {
     
     elements.correctCount.textContent = quizState.correctAnswers;
     elements.totalCount.textContent = quizConfig.totalQuestions;
-    elements.accuracyPercent.textContent = quizState.score;
     elements.totalTimeSpent.textContent = Math.round(minutes + seconds / 60);
     
     elements.resultsProgressBar.style.width = `${quizState.score}%`;
