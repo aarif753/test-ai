@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced User Activity Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a4b8c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card {
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .user-list {
+            grid-column: 1 / -1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        th:hover {
+            background-color: var(--secondary);
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background-color: #e7f6e9;
+            color: #2e7d32;
+        }
+        
+        .status-offline {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--gray);
+            border-top: 1px solid #eee;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .search-box button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .last-updated {
+            text-align: right;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+        
+        .device-icon {
+            margin-right: 5px;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-detail-view {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: white;
+        }
+        
+        .user-detail-view h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .session-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .session-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .close-detail {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Advanced User Activity Tracker</h1>
+        <p>Comprehensive monitoring of user login activity and behavior</p>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('dashboard')">Dashboard</div>
+        <div class="tab" onclick="switchTab('analytics')">Analytics</div>
+        <div class="tab" onclick="switchTab('reports')">Reports</div>
+    </div>
+    
+    <div id="dashboardTab" class="tab-content active">
+        <div class="dashboard">
+            <div class="card stat-card" onclick="showDetail('totalUsers')">
+                <div class="card-title">Total Users</div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">Registered in system</div>
+            </div>
+            
+            <div class="card stat-card" onclick="showDetail('activeSessions')">
+                <div class="card-title">Active Sessions</div>
+                <div class="stat-value" id="activeSessions">0</div>
+                <div class="stat-label">Currently logged in</div>
+            </div>
+            
+            <div class="card stat-card" onclick="showDetail('totalLogins')">
+                <div class="card-title">Total Logins</div>
+                <div class="stat-value" id="totalLogins">0</div>
+                <div class="stat-label">All-time login count</div>
+            </div>
+            
+            <div class="card stat-card" onclick="showDetail('avgSession')">
+                <div class="card-title">Avg. Session</div>
+                <div class="stat-value" id="avgSession">0m</div>
+                <div class="stat-label">Average session duration</div>
+            </div>
+            
+            <div class="card user-list">
+                <div class="card-title">
+                    <span>User Activity</span>
+                    <div>
+                        <button onclick="exportData()"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search users..." onkeyup="searchUsers()">
+                    <select id="statusFilter" onchange="filterUsers()">
+                        <option value="all">All Status</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                    <select id="deviceFilter" onchange="filterUsers()">
+                        <option value="all">All Devices</option>
+                        <option value="desktop">Desktop</option>
+                        <option value="mobile">Mobile</option>
+                        <option value="tablet">Tablet</option>
+                    </select>
+                    <button onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('username')">Username <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('status')">Status <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('lastLogin')">Last Login <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('loginCount')">Login Count <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('device')">Device <i class="fas fa-sort"></i></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- User data will be populated here -->
+                    </tbody>
+                </table>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated here -->
+                </div>
+                
+                <div class="last-updated" id="lastUpdated">
+                    Last updated: <span id="updateTime">Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="analyticsTab" class="tab-content">
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">Login Activity (Last 7 Days)</div>
+                <div class="chart-container" id="loginChart">
+                    <!-- Chart will be rendered here -->
+                    <div style="text-align: center; padding: 80px 0; color: var(--gray);">
+                        <i class="fas fa-chart-bar" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Login activity chart will be displayed here</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Device Distribution</div>
+                <div class="chart-container" id="deviceChart">
+                    <!-- Chart will be rendered here -->
+                    <div style="text-align: center; padding: 80px 0; color: var(--gray);">
+                        <i class="fas fa-mobile-alt" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Device distribution chart will be displayed here</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Peak Activity Times</div>
+                <div class="chart-container" id="timeChart">
+                    <!-- Chart will be rendered here -->
+                    <div style="text-align: center; padding: 80px 0; color: var(--gray);">
+                        <i class="fas fa-clock" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Peak activity times chart will be displayed here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="reportsTab" class="tab-content">
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">Generate Reports</div>
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label>Report Type:</label>
+                        <select id="reportType" style="padding: 8px; width: 100%; margin-top: 5px;">
+                            <option value="loginActivity">Login Activity Report</option>
+                            <option value="userSessions">User Sessions Report</option>
+                            <option value="deviceUsage">Device Usage Report</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label>Date Range:</label>
+                        <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <input type="date" id="startDate" style="padding: 8px; flex: 1;">
+                            <input type="date" id="endDate" style="padding: 8px; flex: 1;">
+                        </div>
+                    </div>
+                    
+                    <button onclick="generateReport()" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Recent Reports</div>
+                <div style="padding: 10px;">
+                    <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                        <span>Login Activity - Today</span>
+                        <button><i class="fas fa-download"></i></button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                        <span>Device Usage - This Week</span>
+                        <button><i class="fas fa-download"></i></button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px;">
+                        <span>User Sessions - This Month</span>
+                        <button><i class="fas fa-download"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="userDetail" class="user-detail-view">
+        <span class="close-detail" onclick="closeDetail()">&times;</span>
+        <h3 id="detailUsername">User Details</h3>
+        <div id="detailContent">
+            <!-- User details will be populated here -->
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Advanced User Activity Tracker. All rights reserved. @aarifalam0105</p>
+    </div>
+</div>
+
+<script>
+    // Enhanced user activity tracker with device detection and advanced features
+    let users = [];
+    let currentPage = 1;
+    const usersPerPage = 5;
+    let currentSort = { column: 'lastLogin', direction: 'desc' };
+    
+    // Device detection mapping
+    const deviceTypes = {
+        desktop: {
+            windows: { icon: 'fa-windows', name: 'Windows PC' },
+            mac: { icon: 'fa-apple', name: 'Mac Desktop' },
+            linux: { icon: 'fa-linux', name: 'Linux PC' },
+            chromeos: { icon: 'fa-chrome', name: 'Chrome OS' }
+        },
+        mobile: {
+            android: { icon: 'fa-android', name: 'Android Phone' },
+            iphone: { icon: 'fa-mobile-alt', name: 'iPhone' },
+            windows: { icon: 'fa-mobile-alt', name: 'Windows Phone' }
+        },
+        tablet: {
+            ipad: { icon: 'fa-tablet-alt', name: 'iPad' },
+            android: { icon: 'fa-tablet-alt', name: 'Android Tablet' }
+        }
+    };
+    
+    // Browser detection mapping
+    const browserTypes = {
+        chrome: { icon: 'fa-chrome', name: 'Chrome' },
+        firefox: { icon: 'fa-firefox', name: 'Firefox' },
+        safari: { icon: 'fa-safari', name: 'Safari' },
+        edge: { icon: 'fa-edge', name: 'Edge' },
+        opera: { icon: 'fa-opera', name: 'Opera' }
+    };
+    
+    // Load user data from credentials.json
+    async function loadUserCredentials() {
+        try {
+            const response = await fetch('credentials.json');
+            if (!response.ok) {
+                throw new Error('Failed to load credentials');
+            }
+            
+            const credentials = await response.json();
+            users = credentials.map(cred => ({
+                username: cred.username,
+                status: 'offline',
+                lastLogin: null,
+                loginCount: 0,
+                currentDevice: null,
+                browser: null,
+                location: null,
+                sessions: [],
+                totalTimeSpent: 0
+            }));
+            
+            // Load activity data from localStorage
+            loadActivityData();
+        } catch (error) {
+            console.error("Error loading credentials:", error);
+            // Fallback to sample data if credentials.json is not available
+            users = [
+                { username: 'admin', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, browser: null, location: null, sessions: [], totalTimeSpent: 0 },
+                { username: 'user1', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, browser: null, location: null, sessions: [], totalTimeSpent: 0 },
+                { username: 'testuser', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, browser: null, location: null, sessions: [], totalTimeSpent: 0 },
+                { username: 'demo', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, browser: null, location: null, sessions: [], totalTimeSpent: 0 },
+                { username: 'guest', status: 'offline', lastLogin: null, loginCount: 0, currentDevice: null, browser: null, location: null, sessions: [], totalTimeSpent: 0 }
+            ];
+            loadActivityData();
+        }
+    }
+    
+    // Detect device type based on user agent
+    function detectDeviceInfo() {
+        const userAgent = navigator.userAgent;
+        let deviceType = 'desktop';
+        let deviceOS = 'unknown';
+        let browser = 'chrome';
+        
+        // Detect device type
+        if (/mobile/i.test(userAgent)) {
+            deviceType = 'mobile';
+        } else if (/tablet|ipad/i.test(userAgent)) {
+            deviceType = 'tablet';
+        }
+        
+        // Detect OS
+        if (/windows/i.test(userAgent)) {
+            deviceOS = 'windows';
+        } else if (/macintosh|mac os/i.test(userAgent)) {
+            deviceOS = 'mac';
+        } else if (/linux/i.test(userAgent)) {
+            deviceOS = 'linux';
+        } else if (/android/i.test(userAgent)) {
+            deviceOS = 'android';
+        } else if (/iphone|ipod/i.test(userAgent)) {
+            deviceOS = 'iphone';
+        } else if (/ipad/i.test(userAgent)) {
+            deviceOS = 'ipad';
+        } else if (/cros/i.test(userAgent)) {
+            deviceOS = 'chromeos';
+        }
+        
+        // Detect browser
+        if (/edg/i.test(userAgent)) {
+            browser = 'edge';
+        } else if (/firefox/i.test(userAgent)) {
+            browser = 'firefox';
+        } else if (/safari/i.test(userAgent)) {
+            browser = 'safari';
+        } else if (/opr|opera/i.test(userAgent)) {
+            browser = 'opera';
+        }
+        
+        return {
+            type: deviceType,
+            os: deviceOS,
+            browser: browser,
+            name: deviceTypes[deviceType] && deviceTypes[deviceType][deviceOS] 
+                ? deviceTypes[deviceType][deviceOS].name 
+                : 'Unknown Device',
+            icon: deviceTypes[deviceType] && deviceTypes[deviceType][deviceOS] 
+                ? deviceTypes[deviceType][deviceOS].icon 
+                : 'fa-question-circle',
+            browserName: browserTypes[browser] ? browserTypes[browser].name : 'Unknown Browser',
+            browserIcon: browserTypes[browser] ? browserTypes[browser].icon : 'fa-globe'
+        };
+    }
+    
+    // Load user activity data from localStorage
+    function loadActivityData() {
+        const userActivity = JSON.parse(localStorage.getItem('userActivity')) || {};
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+        
+        // Update user data with activity information
+        users.forEach(user => {
+            if (userActivity[user.username]) {
+                user.loginCount = userActivity[user.username].loginCount || 0;
+                user.lastLogin = userActivity[user.username].lastLogin || null;
+                user.sessions = userActivity[user.username].sessions || [];
+                user.totalTimeSpent = userActivity[user.username].totalTimeSpent || 0;
+            }
+            
+            // Check if user is currently active
+            if (activeSessions[user.username]) {
+                user.status = 'online';
+                user.currentDevice = activeSessions[user.username].device || 'Unknown Device';
+                user.browser = activeSessions[user.username].browser || 'Unknown Browser';
+                user.location = activeSessions[user.username].location || 'Unknown Location';
+            } else {
+                user.status = 'offline';
+            }
+        });
+        
+        updateDashboard();
+    }
+    
+    // Save user activity data to localStorage
+    function saveActivityData() {
+        const userActivity = JSON.parse(localStorage.getItem('userActivity')) || {};
+        
+        users.forEach(user => {
+            if (!userActivity[user.username]) {
+                userActivity[user.username] = {};
+            }
+            
+            userActivity[user.username].loginCount = user.loginCount;
+            userActivity[user.username].lastLogin = user.lastLogin;
+            userActivity[user.username].sessions = user.sessions;
+            userActivity[user.username].totalTimeSpent = user.totalTimeSpent;
+        });
+        
+        localStorage.setItem('userActivity', JSON.stringify(userActivity));
+        updateDashboard();
+    }
+    
+    // Simulate user login (for demo purposes)
+    function simulateLogin() {
+        const randomUser = users[Math.floor(Math.random() * users.length)];
+        const deviceInfo = detectDeviceInfo();
+        
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+        activeSessions[randomUser.username] = {
+            loginTime: Date.now(),
+            device: deviceInfo.name,
+            deviceIcon: deviceInfo.icon,
+            browser: deviceInfo.browserName,
+            browserIcon: deviceInfo.browserIcon,
+            location: 'Simulated Location'
+        };
+        
+        localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+        
+        // Update user data
+        const user = users.find(u => u.username === randomUser.username);
+        if (user) {
+            user.status = 'online';
+            user.lastLogin = Date.now();
+            user.loginCount++;
+            user.currentDevice = deviceInfo.name;
+            user.browser = deviceInfo.browserName;
+            user.location = 'Simulated Location';
+            
+            // Add to session history
+            user.sessions.push({
+                loginTime: Date.now(),
+                logoutTime: null,
+                duration: null,
+                device: deviceInfo.name,
+                browser: deviceInfo.browserName,
+                location: 'Simulated Location'
+            });
+        }
+        
+        saveActivityData();
+    }
+    
+    // Simulate user logout (for demo purposes)
+    function simulateLogout() {
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+        const usernames = Object.keys(activeSessions);
+        
+        if (usernames.length > 0) {
+            const randomUsername = usernames[Math.floor(Math.random() * usernames.length)];
+            const session = activeSessions[randomUsername];
+            
+            delete activeSessions[randomUsername];
+            localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+            
+            // Update user data
+            const user = users.find(u => u.username === randomUsername);
+            if (user) {
+                user.status = 'offline';
+                user.currentDevice = null;
+                user.browser = null;
+                user.location = null;
+                
+                // Update the last session with logout time
+                if (user.sessions.length > 0) {
+                    const lastSession = user.sessions[user.sessions.length - 1];
+                    if (!lastSession.logoutTime) {
+                        lastSession.logoutTime = Date.now();
+                        lastSession.duration = lastSession.logoutTime - lastSession.loginTime;
+                        user.totalTimeSpent += lastSession.duration;
+                    }
+                }
+            }
+            
+            saveActivityData();
+        }
+    }
+    
+    // Update dashboard statistics
+    function updateDashboard() {
+        // Update total users
+        document.getElementById('totalUsers').textContent = users.length;
+        
+        // Update active sessions (online users)
+        const activeSessions = users.filter(user => user.status === 'online').length;
+        document.getElementById('activeSessions').textContent = activeSessions;
+        
+        // Update total logins
+        const totalLogins = users.reduce((total, user) => total + user.loginCount, 0);
+        document.getElementById('totalLogins').textContent = totalLogins;
+        
+        // Calculate average session duration
+        let totalDuration = 0;
+        let sessionCount = 0;
+        
+        users.forEach(user => {
+            user.sessions.forEach(session => {
+                if (session.duration) {
+                    totalDuration += session.duration;
+                    sessionCount++;
+                }
+            });
+        });
+        
+        const avgDuration = sessionCount > 0 ? Math.round(totalDuration / sessionCount / 60000) : 0;
+        document.getElementById('avgSession').textContent = `${avgDuration}m`;
+        
+        // Update user table
+        renderUserTable();
+        
+        // Update last updated time
+        document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
+    }
+    
+    // Render user table with pagination
+    function renderUserTable() {
+        const tableBody = document.getElementById('userTableBody');
+        tableBody.innerHTML = '';
+        
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const deviceFilter = document.getElementById('deviceFilter').value;
+        
+        // Filter users based on search and filters
+        let filteredUsers = users.filter(user => {
+            const matchesSearch = !searchTerm || user.username.toLowerCase().includes(searchTerm);
+            const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+            const matchesDevice = deviceFilter === 'all' || 
+                                (user.currentDevice && 
+                                 user.currentDevice.toLowerCase().includes(deviceFilter));
+            
+            return matchesSearch && matchesStatus && matchesDevice;
+        });
+        
+        // Sort users
+        filteredUsers.sort((a, b) => {
+            let valueA, valueB;
+            
+            switch (currentSort.column) {
+                case 'username':
+                    valueA = a.username;
+                    valueB = b.username;
+                    break;
+                case 'status':
+                    valueA = a.status;
+                    valueB = b.status;
+                    break;
+                case 'lastLogin':
+                    valueA = a.lastLogin || 0;
+                    valueB = b.lastLogin || 0;
+                    break;
+                case 'loginCount':
+                    valueA = a.loginCount;
+                    valueB = b.loginCount;
+                    break;
+                case 'device':
+                    valueA = a.currentDevice || '';
+                    valueB = b.currentDevice || '';
+                    break;
+                default:
+                    valueA = a.lastLogin || 0;
+                    valueB = b.lastLogin || 0;
+            }
+            
+            if (typeof valueA === 'string') {
+                return currentSort.direction === 'asc' 
+                    ? valueA.localeCompare(valueB)
+                    : valueB.localeCompare(valueA);
+            } else {
+                return currentSort.direction === 'asc' 
+                    ? valueA - valueB
+                    : valueB - valueA;
+            }
+        });
+        
+        // Calculate pagination
+        const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+        const startIndex = (currentPage - 1) * usersPerPage;
+        const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+        
+        // Render users
+        paginatedUsers.forEach(user => {
+            const row = document.createElement('tr');
+            
+            // Format last login date
+            let formattedDate = 'Never';
+            if (user.lastLogin) {
+                const lastLogin = new Date(user.lastLogin);
+                formattedDate = lastLogin.toLocaleDateString() + ' ' + lastLogin.toLocaleTimeString();
+            }
+            
+            // Format device info
+            let deviceInfo = '-';
+            if (user.currentDevice) {
+                const deviceIcon = user.sessions && user.sessions.length > 0 
+                    ? user.sessions[user.sessions.length - 1].deviceIcon || 'fa-desktop'
+                    : 'fa-desktop';
+                deviceInfo = `<i class="fas ${deviceIcon} device-icon"></i> ${user.currentDevice}`;
+            }
+            
+            row.innerHTML = `
+                <td>${user.username}</td>
+                <td><span class="status ${user.status === 'online' ? 'status-online' : 'status-offline'}">${user.status === 'online' ? 'Online' : 'Offline'}</span></td>
+                <td>${formattedDate}</td>
+                <td>${user.loginCount}</td>
+                <td>${deviceInfo}</td>
+                <td>
+                    <button onclick="viewUserDetails('${user.username}')" style="padding: 5px 10px; background: var(--info); color: white; border: none; border-radius: 3px; cursor: pointer;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        // Render pagination
+        renderPagination(totalPages);
+    }
+    
+    // Render pagination controls
+    function renderPagination(totalPages) {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+        
+        if (totalPages <= 1) return;
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '&laquo;';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderUserTable();
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+        
+        // Page buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.toggle('active', i === currentPage);
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderUserTable();
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = '&raquo;';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderUserTable();
+            }
+        });
+        paginationContainer.appendChild(nextButton);
+    }
+    
+    // Sort table by column
+    function sortTable(column) {
+        if (currentSort.column === column) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.direction = 'asc';
+        }
+        
+        renderUserTable();
+    }
+    
+    // Search users
+    function searchUsers() {
+        currentPage = 1;
+        renderUserTable();
+    }
+    
+    // Filter users by status or device
+    function filterUsers() {
+        currentPage = 1;
+        renderUserTable();
+    }
+    
+    // Refresh data
+    function refreshData() {
+        loadActivityData();
+    }
+    
+    // View user details
+    function viewUserDetails(username) {
+        const user = users.find(u => u.username === username);
+        if (!user) return;
+        
+        document.getElementById('detailUsername').textContent = `User Details: ${username}`;
+        
+        let detailHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <strong>Username:</strong> ${user.username}
+                </div>
+                <div>
+                    <strong>Status:</strong> <span class="status ${user.status === 'online' ? 'status-online' : 'status-offline'}">${user.status === 'online' ? 'Online' : 'Offline'}</span>
+                </div>
+                <div>
+                    <strong>Total Logins:</strong> ${user.loginCount}
+                </div>
+                <div>
+                    <strong>Total Time Spent:</strong> ${Math.round(user.totalTimeSpent / 60000)} minutes
+                </div>
+        `;
+        
+        if (user.currentDevice) {
+            detailHTML += `
+                <div>
+                    <strong>Current Device:</strong> ${user.currentDevice}
+                </div>
+                <div>
+                    <strong>Current Browser:</strong> ${user.browser}
+                </div>
+                <div>
+                    <strong>Location:</strong> ${user.location || 'Unknown'}
+                </div>
+            `;
+        }
+        
+        detailHTML += `</div>`;
+        
+        // Add session history
+        if (user.sessions.length > 0) {
+            detailHTML += `
+                <h4 style="margin-top: 20px;">Session History</h4>
+                <ul class="session-list">
+            `;
+            
+            // Show only the last 5 sessions
+            const recentSessions = user.sessions.slice(-5).reverse();
+            
+            recentSessions.forEach(session => {
+                const loginTime = new Date(session.loginTime).toLocaleString();
+                const logoutTime = session.logoutTime 
+                    ? new Date(session.logoutTime).toLocaleString() 
+                    : 'Still active';
+                const duration = session.duration 
+                    ? Math.round(session.duration / 60000) + ' minutes' 
+                    : 'N/A';
+                
+                detailHTML += `
+                    <li class="session-item">
+                        <div>
+                            <div><strong>Login:</strong> ${loginTime}</div>
+                            <div><strong>Logout:</strong> ${logoutTime}</div>
+                            <div><strong>Duration:</strong> ${duration}</div>
+                        </div>
+                        <div>
+                            <div><i class="fas ${session.deviceIcon || 'fa-desktop'}"></i> ${session.device}</div>
+                            <div><i class="fas ${session.browserIcon || 'fa-globe'}"></i> ${session.browser}</div>
+                        </div>
+                    </li>
+                `;
+            });
+            
+            detailHTML += `</ul>`;
+        }
+        
+        document.getElementById('detailContent').innerHTML = detailHTML;
+        document.getElementById('userDetail').style.display = 'block';
+    }
+    
+    // Close user detail view
+    function closeDetail() {
+        document.getElementById('userDetail').style.display = 'none';
+    }
+    
+    // Show detail for statistics cards
+    function showDetail(statType) {
+        let message = '';
+        
+        switch(statType) {
+            case 'totalUsers':
+                message = `Total registered users in the system: ${users.length}`;
+                break;
+            case 'activeSessions':
+                const activeCount = users.filter(user => user.status === 'online').length;
+                message = `Currently active user sessions: ${activeCount}`;
+                break;
+            case 'totalLogins':
+                const totalLogins = users.reduce((total, user) => total + user.loginCount, 0);
+                message = `All-time login count across all users: ${totalLogins}`;
+                break;
+            case 'avgSession':
+                let totalDuration = 0;
+                let sessionCount = 0;
+                
+                users.forEach(user => {
+                    user.sessions.forEach(session => {
+                        if (session.duration) {
+                            totalDuration += session.duration;
+                            sessionCount++;
+                        }
+                    });
+                });
+                
+                const avgMinutes = sessionCount > 0 ? Math.round(totalDuration / sessionCount / 60000) : 0;
+                message = `Average session duration across all users: ${avgMinutes} minutes`;
+                break;
+        }
+        
+        alert(message);
+    }
+    
+    // Switch between tabs
+    function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabName + 'Tab').classList.add('active');
+        
+        // Set active class to clicked tab
+        event.currentTarget.classList.add('active');
+    }
+    
+    // Export data
+    function exportData() {
+        alert('Export functionality would be implemented here. Data would be exported to CSV format.');
+    }
+    
+    // Generate report
+    function generateReport() {
+        alert('Report generation functionality would be implemented here. A PDF report would be generated based on selected criteria.');
+    }
+    
+    // Initialize the dashboard
+    function initDashboard() {
+        loadUserCredentials();
+        
+        // Set up periodic refresh
+        setInterval(refreshData, 30000);
+        
+        // Simulate user activity for demo purposes
+        setInterval(() => {
+            if (Math.random() > 0.5) {
+                simulateLogin();
+            } else {
+                simulateLogout();
+            }
+        }, 5000);
+    }
+    
+    // Initialize when page loads
+    window.onload = initDashboard;
+</script>
+
+</body>
+</html>
